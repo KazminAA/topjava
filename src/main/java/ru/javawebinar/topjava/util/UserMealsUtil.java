@@ -33,12 +33,12 @@ public class UserMealsUtil {
         Map<LocalDate, Integer> dayCalories = new HashMap<>();
         return mealList.stream()
                 .peek(o ->
-                    dayCalories.merge(toLocalDate(o.getDateTime()), o.getCalories(),
+                        dayCalories.merge(o.getDateTime().toLocalDate(), o.getCalories(),
                                 (v1, v2) -> v1 + v2)).sorted((o1, o2) -> 0)
-                .filter(o -> isBetween(toLocalTime(o.getDateTime()),
+                .filter(o -> isBetween(o.getDateTime().toLocalTime(),
                         startTime, endTime))
                 .map(o -> new UserMealWithExceed(o.getDateTime(), o.getDescription(),
-                        o.getCalories(), dayCalories.get(toLocalDate(o.getDateTime())) > caloriesPerDay))
+                        o.getCalories(), dayCalories.get(o.getDateTime().toLocalDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
 }
