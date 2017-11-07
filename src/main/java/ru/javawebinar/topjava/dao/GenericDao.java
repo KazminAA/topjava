@@ -2,7 +2,7 @@ package ru.javawebinar.topjava.dao;
 
 import java.util.List;
 
-public interface GenericDao <T>{
+public interface GenericDao<T>{
 
     int create(T newInstance);
     T read(int id);

@@ -26,4 +26,7 @@
         <url-pattern>/meals</url-pattern>
     </servlet-mapping>
 
+    <listener>
+        <listener-class>ru.javawebinar.topjava.web.ContextListener</listener-class>
+    </listener>
 </web-app>

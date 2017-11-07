@@ -11,7 +11,7 @@ public abstract class GenericIMDaoImpl<T> implements GenericDao<T> {
     private ConcurrentMap<Integer, T> storage;
 
     public GenericIMDaoImpl() {
-        counter = new AtomicInteger(0);
+        counter = new AtomicInteger(1);
         storage = new ConcurrentHashMap<>();
     }
 

@@ -15,16 +15,7 @@
             <th colspan="2">Действие</th>
         </tr>
         <c:forEach items="${meals}" var="meal">
-            <tr 
-                <c:choose>
-                    <c:when test="${meal.exceed eq true}">
-                        class="exceeded"
-                    </c:when>
-                    <c:otherwise>
-                        class="notecxeeded"
-                    </c:otherwise>
-                </c:choose>
-            >
+            <tr class="${meal.exceed eq true ? "exceeded" : "notexceeded"}">
                 <td>
                     <fmt:parseDate value="${meal.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="dateTime" type="both" />
                     <fmt:formatDate value="${dateTime}" pattern="dd-MM-yy HH:mm" var="fomatedDate" />
@@ -37,13 +28,20 @@
                     ${meal.calories}
                 </td>
                 <td>
-                    Редатировать
+                    <a href="${pageContext.servletContext.contextPath}/meals?oper=edit&id=${meal.id}">Редатировать</a>
                 </td>
                 <td>
                     Удалить
                 </td>
             </tr>
         </c:forEach>
+        <tr>
+            <td colspan="5">
+                <form>
+                    <input type="button" value="Добавить" onclick="location.href='${pageContext.servletContext.contextPath}/meals?oper=add'"/>
+                </form>
+            </td>
+        </tr>
     </table>
 </body>
 </html>
