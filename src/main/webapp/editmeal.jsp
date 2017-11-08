@@ -19,14 +19,14 @@
             </c:when>
             <c:otherwise>
                 <c:set var="dt" value="0" />
-                <c:set var="desc" value="0" />
+                <c:set var="desc" value="Здесь может быть ваша еда" />
                 <c:set var="cal" value="0" />
             </c:otherwise>
         </c:choose>
                 <label>Дата:</label><input type="datetime-local" name="date" value="${meal.dateTime}" class="placeholder" required/>
                 <label>Описание:</label><input type="text" name="descr" value="${desc}" class="placeholder" />
                 <label>Калории:</label><input type="number" name="calories" min="0" step="0.1" value="${cal}" class="placeholder" /><br>
-                <input type="submit" value="Action">
+                <input type="submit" value="Подтвердить">
         </form>
     </div>
 </div>
