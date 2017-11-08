@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,28 +22,69 @@ public class MealsServlet extends HttpServlet {
     GenericDao<Meal> mealsDao = DaoFactory.getInstance().getMealsDao();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String action = req.getParameter("oper");
-        if ((action == null) || (action.equals(""))) {
-            log.debug("getting meals from repository");
-            List<Meal> meals = mealsDao.getAll();
-            req.setAttribute("meals", getFilteredWithExceeded(meals, LocalTime.MIN, LocalTime.MAX, 2000));
-            log.debug("adding mealswithexceed to request attribute");
-            req.getRequestDispatcher("meals.jsp").forward(req, resp);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        log.debug("Save meal on date: " + req.getParameter("date"));
+        Meal meal = new Meal(LocalDateTime.parse(req.getParameter("date")),
+                req.getParameter("descr"),
+                Integer.parseInt(req.getParameter("calories")));
+        if (req.getParameter("id") == null) {
+            meal.setId(mealsDao.create(meal));
         }
         else {
-            switch (action) {
-                case "add": {
-                    resp.sendRedirect("editmeal.jsp");
-                    break;
-                }
-                case "edit": {
-                    int id = Integer.parseInt(req.getParameter("id"));
-                    req.setAttribute("meal", mealsDao.read(id));
-                    req.getRequestDispatcher("editmeal.jsp").forward(req, resp);
-                    break;
-                }
+            meal.setId(Integer.parseInt(req.getParameter("id")));
+            mealsDao.update(meal);
+        }
+        resp.sendRedirect("meals");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("oper");
+        String pathToRedirect = "";
+        if ((action == null) || (action.equals(""))) {
+            action = "view";
+        }
+        switch (action) {
+            case "view": {
+                pathToRedirect = viewMealsList(req);
+                break;
+            }
+            case "add": {
+                pathToRedirect = "editmeal.jsp";
+                break;
+            }
+            case "edit": {
+                pathToRedirect = editMeal(req);
+                break;
+            }
+            case "delete": {
+                pathToRedirect = deleteMeal(req);
+                resp.sendRedirect(pathToRedirect);
+                return;
             }
         }
+        req.getRequestDispatcher(pathToRedirect).forward(req, resp);
+    }
+
+    private String deleteMeal(HttpServletRequest req) {
+        log.debug("Entering del method with id=" + req.getParameter("id"));
+        int id = Integer.parseInt(req.getParameter("id"));
+        Meal mealToDel = mealsDao.read(id);
+        log.debug("Delete meal for: " + mealToDel.getDate());
+        mealsDao.delete(mealToDel);
+        return "meals";
+    }
+
+    private String editMeal(HttpServletRequest req) {
+        int id = Integer.parseInt(req.getParameter("id"));
+        req.setAttribute("meal", mealsDao.read(id));
+        return "editmeal.jsp";
+    }
+
+    private String viewMealsList(HttpServletRequest req) {
+        List<Meal> meals = mealsDao.getAll();
+        req.setAttribute("meals", getFilteredWithExceeded(meals, LocalTime.MIN, LocalTime.MAX, 2000));
+        return "meals.jsp";
     }
 }

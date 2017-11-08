@@ -31,7 +31,7 @@
                     <a href="${pageContext.servletContext.contextPath}/meals?oper=edit&id=${meal.id}">Редатировать</a>
                 </td>
                 <td>
-                    Удалить
+                    <a href="${pageContext.servletContext.contextPath}/meals?oper=delete&id=${meal.id}">Удалить</a>
                 </td>
             </tr>
         </c:forEach>
