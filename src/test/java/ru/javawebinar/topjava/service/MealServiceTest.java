@@ -1,7 +1,12 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,7 +18,11 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -24,7 +33,42 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
+
 public class MealServiceTest {
+    private static List<String> statistics = new ArrayList<>();
+    private static final Logger log = getLogger(MealServiceTest.class);
+
+//    @Rule
+//    public TestRule timeWatch = new TestWatcher() {
+//        private com.google.common.base.Stopwatch stopwatch = com.google.common.base.Stopwatch.createUnstarted();
+//        @Override
+//        protected void starting(Description description) {
+//            stopwatch.start();
+//        }
+//
+//        @Override
+//        protected void finished(Description description) {
+//            stopwatch.stop();
+//
+//            String testResult = String.format("Test %s completed in %d ms.", description.getMethodName(),
+//                    stopwatch.elapsed(TimeUnit.MILLISECONDS));
+//
+//            log.info(testResult);
+//            statistics.add(testResult);
+//        }
+//    };
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+
+    @Override
+    protected void finished(long nanos, Description description) {
+        String testResult = String.format("Test %s completed in %d ms.", description.getMethodName(),
+                    TimeUnit.NANOSECONDS.toMillis(nanos));
+
+            log.info(testResult);
+            statistics.add(testResult);
+    }
+};
 
     static {
         SLF4JBridgeHandler.install();
@@ -84,5 +128,10 @@ public class MealServiceTest {
         assertMatch(service.getBetweenDates(
                 LocalDate.of(2015, Month.MAY, 30),
                 LocalDate.of(2015, Month.MAY, 30), USER_ID), MEAL3, MEAL2, MEAL1);
+    }
+
+    @AfterClass
+    public static void end() {
+        statistics.forEach(log::info);
     }
 }
