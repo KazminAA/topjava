@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 
 import java.time.Month;
 import java.util.Arrays;
@@ -41,10 +42,19 @@ public class MealTestData {
         assertMatch(actual, Arrays.asList(expected));
     }
 
-    public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
+  /*  public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
         assertThat(actual).usingElementComparator((m1, m2) -> m1.getDateTime().compareTo(m2.getDateTime())
                 + m1.getDescription().compareTo(m2.getDescription()) +
                 m1.getCalories() - m2.getCalories() + m1.getId() - m2.getId() + m1.getUser().getId()
                 - m2.getUser().getId()).isEqualTo(expected);
+    }*/
+
+    public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
+        assertThat(actual)
+                .usingComparatorForElementFieldsWithType((u1, u2) -> {
+                    return u1.getId() - u2.getId();
+                }, User.class)
+                .usingFieldByFieldElementComparator()
+                .isEqualTo(expected);
     }
 }
