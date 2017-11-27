@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.service;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -38,25 +39,9 @@ public class MealServiceTest {
     private static List<String> statistics = new ArrayList<>();
     private static final Logger log = getLogger(MealServiceTest.class);
 
-//    @Rule
-//    public TestRule timeWatch = new TestWatcher() {
-//        private com.google.common.base.Stopwatch stopwatch = com.google.common.base.Stopwatch.createUnstarted();
-//        @Override
-//        protected void starting(Description description) {
-//            stopwatch.start();
-//        }
-//
-//        @Override
-//        protected void finished(Description description) {
-//            stopwatch.stop();
-//
-//            String testResult = String.format("Test %s completed in %d ms.", description.getMethodName(),
-//                    stopwatch.elapsed(TimeUnit.MILLISECONDS));
-//
-//            log.info(testResult);
-//            statistics.add(testResult);
-//        }
-//    };
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
 
@@ -83,8 +68,10 @@ public class MealServiceTest {
         assertMatch(service.getAll(USER_ID), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testDeleteNotFound() throws Exception {
+        exception.expect(NotFoundException.class);
+        exception.expectMessage("Not found entity with id=" + MEAL1_ID);
         service.delete(MEAL1_ID, 1);
     }
 
@@ -101,8 +88,10 @@ public class MealServiceTest {
         assertMatch(actual, ADMIN_MEAL1);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetNotFound() throws Exception {
+        exception.expect(NotFoundException.class);
+        exception.expectMessage("Not found entity with id=" + MEAL1_ID);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -113,8 +102,10 @@ public class MealServiceTest {
         assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testUpdateNotFound() throws Exception {
+        exception.expect(NotFoundException.class);
+        exception.expectMessage("Not found entity with id=" + MEAL1_ID);
         service.update(MEAL1, ADMIN_ID);
     }
 
