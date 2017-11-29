@@ -35,7 +35,9 @@ public class MealTestData {
     }
 
     public static void assertMatch(Meal actual, Meal expected) {
-        assertThat(actual).isEqualToIgnoringGivenFields(expected, "user");
+        assertThat(actual)
+                .usingComparatorForType(UserTestData.userComparator, User.class)
+                .isEqualToComparingFieldByField(expected);
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
@@ -51,9 +53,7 @@ public class MealTestData {
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
         assertThat(actual)
-                .usingComparatorForElementFieldsWithType((u1, u2) -> {
-                    return u1.getId() - u2.getId();
-                }, User.class)
+                .usingComparatorForElementFieldsWithType(UserTestData.userComparator, User.class)
                 .usingFieldByFieldElementComparator()
                 .isEqualTo(expected);
     }
