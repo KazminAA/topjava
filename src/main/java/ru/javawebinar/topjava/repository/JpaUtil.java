@@ -2,10 +2,12 @@ package ru.javawebinar.topjava.repository;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Conditional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+@Conditional(JPACondition.class)
 public class JpaUtil {
 
     @PersistenceContext
