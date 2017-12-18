@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
@@ -41,23 +42,6 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
-
-    private static Set<Role> getRole(ResultSet resultSet) throws SQLException {
-        Set<Role> roles = new HashSet<>();
-        roles.add(Role.valueOf(resultSet.getString("role")));
-        return roles;
-    }
-
-    private Map<Integer, User> mergeSameRows(List<User> users) {
-        Map<Integer, User> map = new HashMap<>();
-        for (User user : users) {
-            map.merge(user.getId(), user, ((user1, user2) -> {
-                user1.getRoles().addAll(user2.getRoles());
-                return user1;
-            }));
-        }
-        return map;
     }
 
     @Override
@@ -113,23 +97,25 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         return DataAccessUtils.singleResult(mergeSameRows(users).values());
     }
 
+    private Map<Integer, User> mergeSameRows(List<User> users) {
+        return users.stream().collect(Collectors.toMap(User::getId, user -> user, (user1, user2) -> {
+            user1.getRoles().addAll(user2.getRoles());
+            return user1;
+        }));
+    }
+
     @Override
     public List<User> getAll() {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
         Map<Integer, Set<Role>> roleMap = new HashMap<>();
-        jdbcTemplate.query("SELECT * FROM user_roles", new RowMapper<Map<Integer, Set<Role>>>() {
-            @Override
-            public Map<Integer, Set<Role>> mapRow(ResultSet resultSet, int i) throws SQLException {
-                roleMap.merge(resultSet.getInt("user_id"), getRole(resultSet), (set1, set2) -> {
-                    set1.addAll(set2);
-                    return set1;
-                });
-                return null;
-            }
+        jdbcTemplate.query("SELECT * FROM user_roles", (RowMapper<Map<Integer, Set<Role>>>) (resultSet, i) -> {
+            roleMap.merge(resultSet.getInt("user_id"), getRole(resultSet), (set1, set2) -> {
+                set1.addAll(set2);
+                return set1;
+            });
+            return null;
         });
-        for (User user : users) {
-            user.setRoles(roleMap.get(user.getId()));
-        }
+        users.forEach(user -> user.setRoles(roleMap.get(user.getId())));
         return users;
     }
 
@@ -147,5 +133,11 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                     getRole(resultSet)
             );
         }
+    }
+
+    private static Set<Role> getRole(ResultSet resultSet) throws SQLException {
+        Set<Role> roles = new HashSet<>();
+        roles.add(Role.valueOf(resultSet.getString("role")));
+        return roles;
     }
 }
