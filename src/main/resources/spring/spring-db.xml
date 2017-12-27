@@ -23,7 +23,7 @@
     <tx:annotation-driven/>
 
     <beans profile="hsqldb">
-        <context:property-placeholder location="classpath:db/hsqldb.properties, classpath:format/format.properties" system-properties-mode="OVERRIDE"/>
+        <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>
 
         <!--no pooling-->
         <bean id="dataSource"
@@ -35,7 +35,7 @@
     </beans>
 
     <beans profile="postgres">
-        <context:property-placeholder location="classpath:db/postgres.properties, classpath:format/format.properties" system-properties-mode="OVERRIDE"/>
+        <context:property-placeholder location="classpath:db/postgres.properties" system-properties-mode="OVERRIDE"/>
 
         <bean id="dataSource"
               class="org.apache.tomcat.jdbc.pool.DataSource"
@@ -47,7 +47,7 @@
 
     <beans profile="tomcat">
         <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/topjava"/>
-        <context:property-placeholder location="classpath:db/tomcat.properties, classpath:format/format.properties" system-properties-mode="OVERRIDE"/>
+        <context:property-placeholder location="classpath:db/tomcat.properties" system-properties-mode="OVERRIDE"/>
     </beans>
 
     <beans profile="jdbc">
