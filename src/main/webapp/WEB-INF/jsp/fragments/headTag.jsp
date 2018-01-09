@@ -9,9 +9,9 @@
 
     <link rel="stylesheet" href="resources/css/style.css">
     <link rel="stylesheet" href="webjars/bootstrap/3.3.7-1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="webjars/eonasdan-bootstrap-datetimepicker/4.17.47/build/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="webjars/datatables/1.10.16/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="webjars/noty/3.1.0/lib/noty.css"/>
-    <link rel="stylesheet" href="webjars/eonasdan-bootstrap-datetimepicker/4.17.47/build/css/bootstrap-datetimepicker.min.css>
     <link rel="shortcut icon" href="resources/images/icon-meal.png">
 
     <!--http://stackoverflow.com/a/24070373/548473-->
