@@ -48,33 +48,22 @@ $(function () {
     makeEditable();
 });
 
-var startDate = $("#startDate");
-var endDate = $("#endDate");
+$(document).ready(function () {
+    var startDate = $("#startDate");
+    var endDate = $("#endDate");
 
-startDate.datetimepicker({
-    timepicker: false,
-    format: 'Y-m-d',
-    formatDate: 'Y-m-d',
-    onShow: function (ct) {
-        this.setOptions({
-            maxDate: endDate.val() ? endDate.val() : false
-        })
-    }
-});
-endDate.datetimepicker({
-    timepicker: false,
-    format: 'Y-m-d',
-    formatDate: 'Y-m-d',
-    onShow: function (ct) {
-        this.setOptions({
-            minDate: startDate.val() ? startDate.val() : false
-        })
-    }
-});
-$("#startTime, #endTime").datetimepicker({
-    datepicker: false,
-    format: "H:i"
-});
-$("#dateTime").datetimepicker({
-    format: "Y-m-d\\TH:i"
+    startDate.datetimepicker({
+        format: 'YYYY-MM-DD',
+        maxDate: endDate.val() ? endDate.val() : false
+    });
+    endDate.datetimepicker({
+        format: 'YYYY-MM-DD',
+        minDate: startDate.val() ? startDate.val() : false
+    });
+    $("#startTime, #endTime").datetimepicker({
+        format: "HH:mm"
+    });
+    $("#dateTime").datetimepicker({
+        format: "YYYY-MM-DDTHH:mm"
+    });
 });

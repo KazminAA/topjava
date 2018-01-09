@@ -104,7 +104,7 @@
                         <label for="dateTime" class="control-label col-sm-3"><spring:message
                                 code="meal.dateTime"/></label>
                         <div class="col-sm-9">
-                            <input class="form-control" name="dateTime" id="dateTime"
+                            <input type="text" class="form-control" name="dateTime" id="dateTime"
                                    placeholder="<spring:message code="meal.dateTime"/>">
                         </div>
                     </div>
