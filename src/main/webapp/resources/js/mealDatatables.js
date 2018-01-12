@@ -16,11 +16,21 @@ function clearFilter() {
 
 $(function () {
     datatableApi = $("#datatable").DataTable({
+        "ajax": {
+            "url": ajaxUrl,
+            "dataSrc": ""
+        },
         "paging": false,
         "info": true,
         "columns": [
             {
-                "data": "dateTime"
+                "data": "dateTime",
+                "render": function (data, type, row) {
+                    if (type === "display") {
+                        return data.substring(0, 16).replace("T", " ");
+                    }
+                    return data;
+                }
             },
             {
                 "data": "description"
@@ -29,12 +39,14 @@ $(function () {
                 "data": "calories"
             },
             {
-                "defaultContent": "Edit",
-                "orderable": false
+                "orderable": false,
+                "defaultContent": "",
+                "render": renderEditBtn
             },
             {
-                "defaultContent": "Delete",
-                "orderable": false
+                "orderable": false,
+                "defaultContent": "",
+                "render": renderDeleteBtn
             }
         ],
         "order": [
@@ -42,7 +54,31 @@ $(function () {
                 0,
                 "desc"
             ]
-        ]
+        ],
+        "createdRow": function (row, data, dataIndex) {
+            $(row).addClass(data.exceed ? "exceeded" : "normal");
+        },
+        "initComplete": makeEditable
     });
-    makeEditable();
+});
+
+$(document).ready(function () {
+    var startDate = $("#startDate");
+    var endDate = $("#endDate");
+
+    startDate.datetimepicker({
+        format: 'YYYY-MM-DD',
+        maxDate: endDate.val() ? endDate.val() : false
+    });
+    endDate.datetimepicker({
+        format: 'YYYY-MM-DD',
+        minDate: startDate.val() ? startDate.val() : false
+    });
+    $("#startTime, #endTime").datetimepicker({
+        format: "HH:mm"
+    });
+    $("#dateTime").datetimepicker({
+        format: "YYYY-MM-DDTHH:mm",
+        sideBySide: true
+    });
 });

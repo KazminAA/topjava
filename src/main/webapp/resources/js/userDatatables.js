@@ -56,11 +56,11 @@ $(function () {
             },
             {
                 "data": "registered",
-                "render": function (date, type, row) {
+                "render": function (data, type, row) {
                     if (type === "display") {
-                        return date.substring(0, 10);
+                        return data.substring(0, 10);
                     }
-                    return date;
+                    return data;
                 }
             },
             {

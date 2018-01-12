@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 @Controller
 public class RootController {
@@ -31,8 +29,6 @@ public class RootController {
 
     @GetMapping("/meals")
     public String meals(Model model) {
-        model.addAttribute("meals",
-                MealsUtil.getWithExceeded(mealService.getAll(AuthorizedUser.id()), AuthorizedUser.getCaloriesPerDay()));
         return "meals";
     }
 }
