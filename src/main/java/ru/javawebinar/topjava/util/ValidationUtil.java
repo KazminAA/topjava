@@ -56,8 +56,8 @@ public class ValidationUtil {
         return result;
     }
 
-    public static String getErrorResponse(BindingResult result) {
-        StringJoiner joiner = new StringJoiner("<br>");
+    public static String getErrorResponse(BindingResult result, String delimiter) {
+        StringJoiner joiner = new StringJoiner(delimiter);
         result.getFieldErrors().forEach(
                 fe -> {
                     String msg = fe.getDefaultMessage();
