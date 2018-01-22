@@ -48,8 +48,11 @@ public class ExceptionInfoHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        if (ValidationUtil.getRootCause(e).getLocalizedMessage().contains("users_unique_email_idx")) {
+        String causeMessage = ValidationUtil.getRootCause(e).getLocalizedMessage();
+        if (causeMessage.contains("users_unique_email_idx")) {
             return new ErrorInfo(req.getRequestURL(), ErrorType.DATA_ERROR, "User with this email already exists.");
+        } else if (causeMessage.contains("meals_unique_user_datetime_idx")) {
+            return new ErrorInfo(req.getRequestURL(), ErrorType.DATA_ERROR, "Meal at this time already exists.");
         }
         return logAndGetErrorInfo(req, e, true, ErrorType.DATA_ERROR);
     }
