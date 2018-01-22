@@ -70,7 +70,16 @@
         <property name="fallbackToSystemLocale" value="false"/>
     </bean>
 
+    <bean id="localResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="defaultLocale" value="ru"/>
+        <property name="cookieName" value="locale.cookie"/>
+        <property name="cookieMaxAge" value="180000"/>
+    </bean>
+
     <mvc:interceptors>
         <bean class="ru.javawebinar.topjava.web.interceptor.ModelInterceptor"/>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" name="localeChangeInterceptor">
+            <property name="paramName" value="lang"/>
+        </bean>
     </mvc:interceptors>
 </beans>
