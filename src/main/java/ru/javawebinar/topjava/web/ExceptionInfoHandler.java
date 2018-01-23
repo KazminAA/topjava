@@ -23,9 +23,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import static ru.javawebinar.topjava.util.ValidationUtil.getErrorResponse;
 
 @RestControllerAdvice(annotations = RestController.class)
@@ -48,14 +45,7 @@ public class ExceptionInfoHandler {
     public ErrorInfo validationError(HttpServletRequest req, Exception e) {
         BindingResult result = e instanceof BindException ?
                 ((BindException) e).getBindingResult() : ((MethodArgumentNotValidException) e).getBindingResult();
-        String delimiter;
-        if (e instanceof BindException) {
-            delimiter = "<br>";
-        } else {
-            delimiter = "; ";
-        }
-        String details = Arrays.stream(getErrorResponse(result)).collect(Collectors.joining(delimiter));
-        return new ErrorInfo(req.getRequestURL(), ErrorType.VALIDATION_ERROR, details);
+        return new ErrorInfo(req.getRequestURL(), ErrorType.VALIDATION_ERROR, getErrorResponse(result));
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
@@ -63,9 +53,11 @@ public class ExceptionInfoHandler {
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
         String causeMessage = ValidationUtil.getRootCause(e).getLocalizedMessage();
         if (causeMessage.contains("users_unique_email_idx")) {
-            return new ErrorInfo(req.getRequestURL(), ErrorType.DATA_ERROR, messageSource.getMessage("common.mailDuplicate", null, LocaleContextHolder.getLocale()));
+            return new ErrorInfo(req.getRequestURL(), ErrorType.DATA_ERROR,
+                    new String[]{messageSource.getMessage("common.mailDuplicate", null, LocaleContextHolder.getLocale())});
         } else if (causeMessage.contains("meals_unique_user_datetime_idx")) {
-            return new ErrorInfo(req.getRequestURL(), ErrorType.DATA_ERROR, "Meal at this time already exists.");
+            return new ErrorInfo(req.getRequestURL(), ErrorType.DATA_ERROR,
+                    new String[]{messageSource.getMessage("common.mealDuplicate", null, LocaleContextHolder.getLocale())});
         }
         return logAndGetErrorInfo(req, e, true, ErrorType.DATA_ERROR);
     }
@@ -83,6 +75,6 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+        return new ErrorInfo(req.getRequestURL(), errorType, new String[]{rootCause.toString()});
     }
 }
