@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,6 +22,9 @@ import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.getErrorResponse;
 
@@ -40,15 +44,18 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(BindException.class)
-    public ErrorInfo handleError(HttpServletRequest req, BindException e) {
-        return new ErrorInfo(req.getRequestURL(), ErrorType.VALIDATION_ERROR, getErrorResponse(e.getBindingResult(), "<br>"));
-    }
-
-    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorInfo handleError(HttpServletRequest req, MethodArgumentNotValidException e) {
-        return new ErrorInfo(req.getRequestURL(), ErrorType.VALIDATION_ERROR, getErrorResponse(e.getBindingResult(), "; "));
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    public ErrorInfo validationError(HttpServletRequest req, Exception e) {
+        BindingResult result = e instanceof BindException ?
+                ((BindException) e).getBindingResult() : ((MethodArgumentNotValidException) e).getBindingResult();
+        String delimiter;
+        if (e instanceof BindException) {
+            delimiter = "<br>";
+        } else {
+            delimiter = "; ";
+        }
+        String details = Arrays.stream(getErrorResponse(result)).collect(Collectors.joining(delimiter));
+        return new ErrorInfo(req.getRequestURL(), ErrorType.VALIDATION_ERROR, details);
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409

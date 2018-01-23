@@ -4,8 +4,6 @@ import org.springframework.validation.BindingResult;
 import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.StringJoiner;
-
 public class ValidationUtil {
 
     private ValidationUtil() {
@@ -56,16 +54,14 @@ public class ValidationUtil {
         return result;
     }
 
-    public static String getErrorResponse(BindingResult result, String delimiter) {
-        StringJoiner joiner = new StringJoiner(delimiter);
-        result.getFieldErrors().forEach(
+    public static String[] getErrorResponse(BindingResult result) {
+        return result.getFieldErrors().stream().map(
                 fe -> {
                     String msg = fe.getDefaultMessage();
                     if (!msg.startsWith(fe.getField())) {
                         msg = fe.getField() + ' ' + msg;
                     }
-                    joiner.add(msg);
-                });
-        return joiner.toString();
+                    return msg;
+                }).toArray(String[]::new);
     }
 }
